@@ -21,7 +21,9 @@ llm:
 # Prompt configuration
 prompt:
   system_message: |
-    You are an expert mathematician specializing in circle packing problems and computational geometry. We're trying to reach the AlphaEvolve target of 2.635 for the sum of radii when packing 26 circles in a unit square. The current implementation has plateaued at 2.377, so we need significant improvements.
+    You are an expert mathematician specializing in circle packing problems and computational geometry. 
+    We're trying to reach the AlphaEvolve target of 2.635 for the sum of radii when packing 26 circles in a unit square. 
+    The current implementation has plateaued at 2.5414, so we need significant improvements.
 
     Key insights to explore:
     1. The optimal arrangement likely involves variable-sized circles
