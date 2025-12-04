@@ -6,7 +6,7 @@ from pathlib import Path
 
 from openevolve.api import run_evolution
 from openevolve.config import Config
-
+import scipy # TODO if not using correct env, this will fail and remind user to use the correct env
 
 def default_paths() -> tuple[str, str, str]:
     """
@@ -54,8 +54,8 @@ def parse_args(default_initial: str, default_evaluator: str, default_config: str
     parser.add_argument(
         "--output",
         "-o",
-        default=str(Path(__file__).resolve().parent / "openevolve_output"),
-        help="Output directory (defaults to example's openevolve_output).",
+        default=str(Path(__file__).resolve().parent / "openevolve_output_phase2_scipy"),
+        help="Output directory (defaults to example's openevolve_output_phase2_scipy).",
     )
     parser.add_argument(
         "--keep-output",

@@ -211,12 +211,8 @@ def _prepare_program(
     else:
         code = str(initial_program)
     
-    # Ensure code has evolution markers if it doesn't already
-    if "EVOLVE-BLOCK-START" not in code:
-        # Wrap entire code in evolution block
-        code = f"""# EVOLVE-BLOCK-START
-{code}
-# EVOLVE-BLOCK-END"""
+    # NOTE: No longer automatically adding EVOLVE-BLOCK markers
+    # This allows testing whether LLM can work without explicit markers
     
     # Write to temp file
     if temp_dir is None:
@@ -325,24 +321,8 @@ def evolve_function(
     func_source = inspect.getsource(func)
     func_name = func.__name__
     
-    # Ensure the function source has evolution markers
-    if "EVOLVE-BLOCK-START" not in func_source:
-        # Try to add markers around the function body
-        lines = func_source.split('\n')
-        func_def_line = next(i for i, line in enumerate(lines) if line.strip().startswith('def '))
-        
-        # Find the end of the function (simplified approach)
-        indent = len(lines[func_def_line]) - len(lines[func_def_line].lstrip())
-        func_end = len(lines)
-        for i in range(func_def_line + 1, len(lines)):
-            if lines[i].strip() and (len(lines[i]) - len(lines[i].lstrip())) <= indent:
-                func_end = i
-                break
-        
-        # Insert evolution markers
-        lines.insert(func_def_line + 1, " " * (indent + 4) + "# EVOLVE-BLOCK-START")
-        lines.insert(func_end + 1, " " * (indent + 4) + "# EVOLVE-BLOCK-END")
-        func_source = '\n'.join(lines)
+    # NOTE: No longer automatically adding EVOLVE-BLOCK markers
+    # This allows testing whether LLM can work without explicit markers
     
     # Create evaluator that tests the function
     def evaluator(program_path):
@@ -448,17 +428,8 @@ def evolve_algorithm(
     # Get class source code
     class_source = inspect.getsource(algorithm_class)
     
-    # Ensure the class has evolution markers
-    if "EVOLVE-BLOCK-START" not in class_source:
-        lines = class_source.split('\n')
-        # Find class definition
-        class_def_line = next(i for i, line in enumerate(lines) if line.strip().startswith('class '))
-        
-        # Add evolution markers around the class body
-        indent = len(lines[class_def_line]) - len(lines[class_def_line].lstrip())
-        lines.insert(class_def_line + 1, " " * (indent + 4) + "# EVOLVE-BLOCK-START")
-        lines.append(" " * (indent + 4) + "# EVOLVE-BLOCK-END")
-        class_source = '\n'.join(lines)
+    # NOTE: No longer automatically adding EVOLVE-BLOCK markers
+    # This allows testing whether LLM can work without explicit markers
     
     # Create evaluator
     def evaluator(program_path):

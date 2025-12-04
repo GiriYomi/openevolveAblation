@@ -13,18 +13,18 @@ def default_paths() -> tuple[str, str, str]:
     Resolve defaults:
     - initial program: best program from phase 1
     - evaluator: circle packing evaluator
-    - config: phase 2 YAML
+    - config: phase 2 (islands) YAML
     """
     here = Path(__file__).resolve().parent
-    initial_program = str(here / "openevolve_output_phase1" / "best" / "best_program.py")
-    evaluator = str(here / "evaluator.py")  
-    config = str(here / "config_phase_2.yaml")
+    initial_program = str(here / "openevolve_output_phase1" / "best" / "best_program.py")   
+    evaluator = str(here / "evaluator.py")
+    config = str(here / "config_phase_2_islands.yaml")
     return initial_program, evaluator, config
 
 
 def parse_args(default_initial: str, default_evaluator: str, default_config: str) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run OpenEvolve phase 2 using the best program from phase 1 as the initial program."
+        description="Run OpenEvolve phase 2 (islands-tuned) using the best program from phase 1 as the initial program."
     )
     parser.add_argument(
         "--initial",
@@ -42,7 +42,7 @@ def parse_args(default_initial: str, default_evaluator: str, default_config: str
         "--config",
         "-c",
         default=default_config,
-        help="Path to phase 2 YAML config (defaults to config_phase_2.yaml).",
+        help="Path to phase 2 YAML config (defaults to config_phase_2_islands.yaml).",
     )
     parser.add_argument(
         "--iterations",
@@ -86,7 +86,7 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    # Load YAML, inject API key, and run phase 2
+    # Load YAML, inject API key, and run
     config_obj = Config.from_yaml(args.config)
 
     # Prefer OPENROUTER_API_KEY when using OpenRouter. Fallback to OPENAI_API_KEY.
@@ -111,7 +111,7 @@ def main() -> int:
         cleanup=not args.keep_output,
     )
 
-    print("\nPhase 2 evolution complete.")
+    print("\nPhase 2 (islands) evolution complete.")
     print(f"Best score: {result.best_score:.6f}")
     if result.metrics:
         print("Best program metrics:")
@@ -135,4 +135,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 

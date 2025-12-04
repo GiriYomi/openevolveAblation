@@ -1,5 +1,5 @@
 # Configuration for circle packing constructor evolution (n=26)
-max_iterations: 30  # Increased iterations
+max_iterations: 100  # Increased iterations
 checkpoint_interval: 10
 log_level: "INFO"
 
@@ -34,7 +34,8 @@ prompt:
     - Perfect symmetry may not yield the optimal packing due to edge effects
 
     Focus on designing an explicit constructor that places each circle in a specific position, rather than an iterative search algorithm.
-  num_top_programs: 3
+  num_top_programs: 16
+  num_diverse_programs: 16
   use_template_stochasticity: true
 
 # Database configuration
@@ -54,5 +55,5 @@ evaluator:
   use_llm_feedback: false
 
 # Evolution settings
-diff_based_evolution: true  # Use full rewrites instead of diffs
-allow_full_rewrites: false    # Allow full rewrites for constructor functions
+diff_based_evolution: false  # Use full rewrites instead of diffs
+allow_full_rewrites: true    # Allow full rewrites for constructor functions

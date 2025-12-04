@@ -1,0 +1,152 @@
+# Example full configuration template for OpenEvolve
+# Each field is provided with a null placeholder and a brief comment about expected types/values.
+# Fill only what you need; unspecified fields fall back to library defaults.
+
+# Top-level (Config)
+max_iterations: null                # int: maximum evolution iterations
+checkpoint_interval: null          # int: save checkpoint every N iterations
+log_level: null                    # str: one of ["DEBUG","INFO","WARNING","ERROR","CRITICAL"]
+log_dir: null                      # str|null: logs directory (null = default)
+random_seed: null                  # int|null: global random seed for reproducibility
+language: null                     # str|null: code language (null = inferred from initial program)
+file_suffix: null                  # str|null: code file suffix like ".py" (null = inferred)
+
+# Evolution settings
+diff_based_evolution: null         # bool: diff-based edits (true) or full rewrites (false)
+max_code_length: null              # int: maximum allowed code length (characters)
+
+# Early stopping
+early_stopping_patience: null      # int|null: stop if no improvement after this many iterations
+convergence_threshold: null        # float: minimal improvement considered as progress
+early_stopping_metric: null        # str: metric name used for early stopping (e.g., "combined_score")
+
+# LLM (LLMConfig)
+llm:
+  api_base: null                   # str: LLM API base URL (e.g., "https://api.openai.com/v1")
+  api_key: null                    # str|null: API key (can be injected via env)
+  system_message: null             # str|null: global system message (can be overridden by prompt.system_message)
+  temperature: null                # float|int: sampling temperature (provider-specific range)
+  top_p: null                      # float: nucleus sampling threshold (0..1]
+  max_tokens: null                 # int: max tokens to generate per request
+  timeout: null                    # int: request timeout seconds
+  retries: null                    # int: retry count on failure
+  retry_delay: null                # int: seconds between retries
+  random_seed: null                # int|null: per-LLM seed support depends on provider/client
+  reasoning_effort: null           # str|null: provider-defined ("low"|"medium"|"high"|custom)
+
+  # Ensembles
+  models: []                       # list[LLMModelConfig]: evolution-time LLM ensemble
+  evaluator_models: []             # list[LLMModelConfig]: evaluator LLM ensemble (defaults to models if empty)
+
+  # Backward-compat convenience fields (optional)
+  primary_model: null              # str|null: if set, added into models
+  primary_model_weight: null       # float|null: weight for primary model
+  secondary_model: null            # str|null: if set, added into models
+  secondary_model_weight: null     # float|null: weight for secondary model (<=0 means ignored)
+
+  # LLMModelConfig schema for entries in 'models' / 'evaluator_models' (example commented):
+  # - name: "provider/model-id"     # str: model name/ID (required)
+  #   weight: 1.0                   # float: ensemble weight
+  #   api_base: "..."               # str|null: override API base for this model
+  #   api_key: "..."                # str|null: override API key for this model
+  #   init_client: null             # callable|str|null: custom client initializer (if supported)
+  #   system_message: "..."         # str|null: per-model system message
+  #   temperature: 0.7              # float|int|null
+  #   top_p: 0.95                   # float|null
+  #   max_tokens: 4096              # int|null
+  #   timeout: 60                   # int|null
+  #   retries: 3                    # int|null
+  #   retry_delay: 5                # int|null
+  #   random_seed: 42               # int|null
+  #   reasoning_effort: "medium"    # str|null
+
+# Prompt (PromptConfig)
+prompt:
+  template_dir: null               # str|null: custom template directory
+  system_message: null             # str|null: system message for evolution LLM
+  evaluator_system_message: null   # str|null: system message for evaluator LLM
+  num_top_programs: null           # int: number of top programs to include as exemplars
+  num_diverse_programs: null       # int: number of diverse programs to include as exemplars
+  use_template_stochasticity: null # bool: enable stochastic template selection/variation
+  template_variations: {}          # dict[str, list[str]]: key -> [variations...]
+  use_meta_prompting: null         # bool: enable meta prompting (implementation dependent)
+  meta_prompt_weight: null         # float: meta prompt blending weight
+  include_artifacts: null          # bool: include evaluation artifacts in prompts
+  max_artifact_bytes: null         # int: maximum artifact bytes injected into prompts
+  artifact_security_filter: null   # bool: enable artifact sanitization
+  suggest_simplification_after_chars: null   # int|null: suggest simplifying above this code length
+  include_changes_under_chars: null         # int|null: inline change descriptions under this length
+  concise_implementation_max_lines: null    # int|null: threshold to label as "concise"
+  comprehensive_implementation_min_lines: null # int|null: threshold to label as "comprehensive"
+  code_length_threshold: null       # int|null: deprecated (use suggest_simplification_after_chars)
+
+# Database (DatabaseConfig)
+database:
+  db_path: null                    # str|null: on-disk DB path (null = in-memory only)
+  in_memory: null                  # bool: keep DB in memory
+  log_prompts: null                # bool: log prompts/responses into program JSON
+
+  # Population / archive / islands
+  population_size: null            # int: max programs to keep in memory
+  archive_size: null               # int: elite archive size
+  num_islands: null                # int: number of isolated islands
+  programs_per_island: null        # int|null: per-island cap (null = unlimited)
+
+  # Selection mix
+  elite_selection_ratio: null      # float: elite fraction for exploitation
+  exploration_ratio: null          # float: exploration sampling probability
+  exploitation_ratio: null         # float: exploitation sampling probability (remainder used for random/weighted)
+  diversity_metric: null           # str: "edit_distance"|"feature_based" (feature_based noted, not implemented)
+
+  # MAP-Elites feature map
+  feature_dimensions: []           # list[str]: ["complexity","diversity","score", or custom evaluator metrics]
+  feature_bins: null               # int|dict[str,int]: global bin count or per-dimension bins
+  diversity_reference_size: null   # int: reference set size for stable diversity calculation
+
+  # Migration (island model)
+  migration_interval: null         # int: migrate every N generations
+  migration_rate: null             # float: fraction to migrate (0..1]
+
+  # Reproducibility
+  random_seed: null                # int|null: overrides DB sampling seed (defaults to top-level)
+
+  # Artifact storage policy
+  artifacts_base_path: null        # str|null: artifacts base path (default: db_path/artifacts)
+  artifact_size_threshold: null    # int: threshold to embed small artifacts in JSON (bytes)
+  cleanup_old_artifacts: null      # bool: delete stale artifacts on save
+  artifact_retention_days: null    # int: retention days for artifacts
+
+  # Novelty filtering (optional)
+  novelty_llm: null                # null: wired internally to ensemble; leave null
+  embedding_model: null            # str|null: embedding model name/id to enable similarity checks
+  similarity_threshold: null       # float: cosine similarity threshold (higher = stricter; e.g., 0.8..0.99+)
+
+# Evaluator (EvaluatorConfig)
+evaluator:
+  timeout: null                    # int: maximum evaluation time (seconds)
+  max_retries: null                # int: evaluator retry attempts on failure
+  memory_limit_mb: null            # int|null: memory cap per evaluation (implementation/platform dependent)
+  cpu_limit: null                  # float|null: CPU cap (implementation/platform dependent)
+  cascade_evaluation: null         # bool: multi-stage evaluation (quick screen -> full eval)
+  cascade_thresholds: []           # list[float]: per-stage thresholds (0..1], task-dependent
+  parallel_evaluations: null       # int: number of parallel eval workers
+  distributed: null                # bool: distributed evaluation (placeholder; external infra required)
+  use_llm_feedback: null           # bool: blend LLM feedback into metrics
+  llm_feedback_weight: null        # float: weight for LLM feedback when blended
+  enable_artifacts: null           # bool: collect and store artifacts from evaluation
+  max_artifact_storage: null       # int: max artifact bytes per program
+
+# Evolution trace logging (EvolutionTraceConfig)
+evolution_trace:
+  enabled: null                    # bool: enable evolution trace recording
+  format: null                     # str: "jsonl"|"json"|"hdf5"
+  include_code: null               # bool: include program code in trace
+  include_prompts: null            # bool: include prompts in trace
+  output_path: null                # str|null: explicit output path (default under output_dir)
+  buffer_size: null                # int: number of records batched per write
+  compress: null                   # bool: compress trace file
+
+
+
+
+

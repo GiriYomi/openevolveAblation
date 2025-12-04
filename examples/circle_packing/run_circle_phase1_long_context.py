@@ -4,10 +4,6 @@ import os
 import sys
 from pathlib import Path
 
-# Add project root to path so we can import local openevolve
-project_root = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(project_root))
-
 from openevolve.api import run_evolution
 
 
@@ -18,7 +14,7 @@ def resolve_paths() -> tuple[str, str, str]:
     here = Path(__file__).resolve().parent
     initial_program = str(here / "initial_program.py")
     evaluator = str(here / "evaluator.py")
-    default_config = str(here / "config_phase_1.yaml")
+    default_config = str(here / "config_phase_1_long_context.yaml")
     return initial_program, evaluator, default_config
 
 
@@ -42,8 +38,8 @@ def parse_args(default_config: str) -> argparse.Namespace:
     parser.add_argument(
         "--output",
         "-o",
-        default=str(Path(__file__).resolve().parent / "openevolve_output"),
-        help="Output directory (defaults to example's openevolve_output).",
+        default=str(Path(__file__).resolve().parent / "openevolve_output_long_context"),
+        help="Output directory (defaults to example's openevolve_output_long_context).",
     )
     parser.add_argument(
         "--keep-output",

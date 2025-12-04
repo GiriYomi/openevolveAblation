@@ -1,4 +1,4 @@
-# CHANGE-START-HERE
+# EVOLVE-BLOCK-START
 """Constructor-based circle packing for n=26 circles"""
 import numpy as np
 
@@ -84,7 +84,9 @@ def compute_max_radii(centers):
 
     return radii
 
-# CHANGE-END-HERE
+
+# EVOLVE-BLOCK-END
+
 
 # This part remains fixed (not evolved)
 def run_packing():

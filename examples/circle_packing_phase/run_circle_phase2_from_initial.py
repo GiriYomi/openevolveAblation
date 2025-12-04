@@ -6,7 +6,7 @@ from pathlib import Path
 
 from openevolve.api import run_evolution
 from openevolve.config import Config
-
+ # 直接从initial做phase 2 100iter 看看结果是否一样
 
 def default_paths() -> tuple[str, str, str]:
     """
@@ -16,7 +16,7 @@ def default_paths() -> tuple[str, str, str]:
     - config: phase 2 YAML
     """
     here = Path(__file__).resolve().parent
-    initial_program = str(here / "openevolve_output_phase1" / "best" / "best_program.py")
+    initial_program = str(here / "initial_program.py") # initial program from phase 1
     evaluator = str(here / "evaluator.py")  
     config = str(here / "config_phase_2.yaml")
     return initial_program, evaluator, config
@@ -54,8 +54,8 @@ def parse_args(default_initial: str, default_evaluator: str, default_config: str
     parser.add_argument(
         "--output",
         "-o",
-        default=str(Path(__file__).resolve().parent / "openevolve_output"),
-        help="Output directory (defaults to example's openevolve_output).",
+        default=str(Path(__file__).resolve().parent / "openevolve_output_phase2_from_initial"),
+        help="Output directory (defaults to example's openevolve_output_phase2_from_initial).",
     )
     parser.add_argument(
         "--keep-output",

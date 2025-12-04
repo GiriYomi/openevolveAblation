@@ -66,8 +66,9 @@ class TestAPIFunctions(unittest.TestCase):
         
         with open(result, 'r') as f:
             content = f.read()
-            self.assertIn("EVOLVE-BLOCK-START", content)
-            self.assertIn("EVOLVE-BLOCK-END", content)
+            # NOTE: Markers are no longer automatically added
+            self.assertNotIn("EVOLVE-BLOCK-START", content)
+            self.assertNotIn("EVOLVE-BLOCK-END", content)
             self.assertIn("def test(): return 42", content)
     
     def test_prepare_program_from_list(self):
@@ -85,7 +86,7 @@ class TestAPIFunctions(unittest.TestCase):
             self.assertIn("def test():\n    return 42", content)
     
     def test_prepare_program_with_existing_markers(self):
-        """Test _prepare_program doesn't add duplicate markers"""
+        """Test _prepare_program preserves existing markers as-is"""
         code = """# EVOLVE-BLOCK-START
 def test(): 
     return 42
@@ -96,7 +97,7 @@ def test():
         
         with open(result, 'r') as f:
             content = f.read()
-            # Should not have nested markers
+            # Markers are preserved, no modifications
             self.assertEqual(content.count("EVOLVE-BLOCK-START"), 1)
             self.assertEqual(content.count("EVOLVE-BLOCK-END"), 1)
     
